@@ -12,19 +12,22 @@ public class QB {
         Task[] items = new Task[100];
         int i = 0;
 
-        while (true){
+        while (true) {
             inputLine = in.nextLine();
             String[] inputParts = inputLine.split(" ", 2);
             String command = inputParts[0];
 
-            switch(command){
-            case "bye": printBye();
+            switch (command) {
+            case "bye":
+                printBye();
                 return;
 
-            case "list": printList(items);
+            case "list":
+                printList(items);
                 break;
 
-            case "mark": if (inputParts.length < 2) {
+            case "mark":
+                if (inputParts.length < 2) {
                 System.out.println(LINE);
                 System.out.println("Please specify a task number.");
                 System.out.println(LINE);
@@ -33,7 +36,8 @@ public class QB {
                 markTask(items, Integer.parseInt(inputParts[1]));
                 break;
 
-            case "unmark": if (inputParts.length < 2) {
+            case "unmark":
+                if (inputParts.length < 2) {
                 System.out.println(LINE);
                 System.out.println("Please specify a task number.");
                 System.out.println(LINE);
@@ -42,7 +46,8 @@ public class QB {
                 unmarkTask(items, Integer.parseInt(inputParts[1]));
                 break;
 
-            default: items[i] = new Task(inputLine);
+            default:
+                items[i] = new Task(inputLine);
                 i++;
                 printAdded(inputLine);
                 break;
@@ -50,7 +55,7 @@ public class QB {
         }
     }
 
-    public static void printGreeting(){
+    public static void printGreeting() {
         String logo = "  /$$$$$$   /$$$$$$$\n"
                 +" /$$__  $$ | $$__  $$\n"
                 +"| $$  \\ $$ | $$  \\ $$\n"
@@ -68,7 +73,7 @@ public class QB {
         System.out.println(LINE);
     }
 
-    public static void printBye(){
+    public static void printBye() {
         System.out.println(LINE);
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(LINE);
@@ -90,43 +95,41 @@ public class QB {
         System.out.println(LINE);
     }
 
-    private static void markTask(Task[] items, int itemNumber){
+    private static void markTask(Task[] items, int itemNumber) {
         System.out.println(LINE);
 
-        if (itemNumber<1 || items[itemNumber-1] == null || itemNumber>100){
+        if (itemNumber<1 || items[itemNumber-1] == null || itemNumber>100) {
             System.out.println("Please enter a valid number");
         }
 
-        else if (!items[itemNumber-1].getStatusIcon().equals("X")){
+        else if (!items[itemNumber-1].getStatusIcon().equals("X")) {
             items[itemNumber-1].markAsDone();
             System.out.println("Nice! I've marked this task as done:\n\t[X] " + items[itemNumber-1].description);
         }
 
-        else{
+        else {
             System.out.println("Oops! This task is already marked as done");
         }
 
         System.out.println(LINE);
     }
 
-    private static void unmarkTask(Task[] items, int itemNumber){
+    private static void unmarkTask(Task[] items, int itemNumber) {
         System.out.println(LINE);
 
-        if (itemNumber<1 || items[itemNumber-1] == null || itemNumber>100){
+        if (itemNumber<1 || items[itemNumber-1] == null || itemNumber>100) {
             System.out.println("Please enter a valid number");
         }
 
-        else if (items[itemNumber-1].getStatusIcon().equals("X")){
+        else if (items[itemNumber-1].getStatusIcon().equals("X")) {
             items[itemNumber-1].unmarkAsDone();
             System.out.println("Alright! I've unmarked this task as incomplete:\n\t[ ] " + items[itemNumber-1].description);
         }
 
-        else{
+        else {
             System.out.println("Oops! This task is already marked as incomplete");
         }
 
         System.out.println(LINE);
     }
-
-
 }
