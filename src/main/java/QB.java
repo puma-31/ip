@@ -56,20 +56,27 @@ public class QB {
     }
 
     public static void printGreeting() {
-        String logo = "  /$$$$$$   /$$$$$$$\n"
-                +" /$$__  $$ | $$__  $$\n"
-                +"| $$  \\ $$ | $$  \\ $$\n"
-                +"| $$  | $$ | $$$$$$$\n"
-                +"| $$  | $$ | $$__  $$\n"
-                +"| $$/$$ $$ | $$  \\ $$\n"
-                +"|  $$$$$$/ | $$$$$$$/\n"
-                +" \\____ $$$ |_______/\n"
-                +"      \\__/        ";
+        String logo = """
+                  /$$$$$$   /$$$$$$$
+                 /$$__  $$ | $$__  $$
+                | $$  \\ $$ | $$  \\ $$
+                | $$  | $$ | $$$$$$$
+                | $$  | $$ | $$__  $$
+                | $$/$$ $$ | $$  \\ $$
+                |  $$$$$$/ | $$$$$$$/
+                 \\____ $$$ |_______/
+                      \\__/       \s""";
         System.out.println(logo);
 
+        String greeting = """
+                Hello! I'm QB, your personal TaskTracker
+                You can add tasks by just listing them out
+                To view your tasks, type "list"
+                mark or unmark tasks as completed by providing their list number
+                to exit, just type "bye"!""";
+
         System.out.println(LINE);
-        System.out.println("Hello! I'm QB\nI can add whatever you say to a list till you say \"bye\".");
-        System.out.println("Type \"list\" to view the items\nGo ahead, type something!");
+        System.out.println(greeting);
         System.out.println(LINE);
     }
 
