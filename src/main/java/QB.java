@@ -158,10 +158,14 @@ public class QB {
 
         String greeting = """
                 Hello! I'm QB, your personal TaskTracker
-                You can add tasks by just listing them out
-                To view your tasks, type "list"
-                mark or unmark tasks as completed by providing their list number
-                to exit, just type "bye"!""";
+                What can I do for you?
+                - Add a todo: todo <description>
+                - Add a deadline: deadline <description> /by <time>
+                - Add an event: event <description> /from <start> /to <end>
+                - View all tasks: list
+                - Mark task as done: mark <task number>
+                - Unmark task: unmark <task number>
+                - Exit: bye""";
 
         System.out.println(LINE);
         System.out.println(greeting);
