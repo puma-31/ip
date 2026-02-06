@@ -1,7 +1,85 @@
-Hello from
- ____        _        
-|  _ \ _   _| | _____ 
-| | | | | | | |/ / _ \
-| |_| | |_| |   <  __/
-|____/ \__,_|_|\_\___|
-
+  /$$$$$$   /$$$$$$$
+ /$$__  $$ | $$__  $$
+| $$  \ $$ | $$  \ $$
+| $$  | $$ | $$$$$$$
+| $$  | $$ | $$__  $$
+| $$/$$ $$ | $$  \ $$
+|  $$$$$$/ | $$$$$$$/
+ \____ $$$ |_______/
+      \__/        
+____________________________________________________________
+Hello! I'm QB, your personal TaskTracker
+What can I do for you?
+- Add a todo: todo <description>
+- Add a deadline: deadline <description> /by <time>
+- Add an event: event <description> /from <start> /to <end>
+- View all tasks: list
+- Mark task as done: mark <task number>
+- Unmark task: unmark <task number>
+- Exit: bye
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] return book
+Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [D][ ] submit report (by: Sunday)
+Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [E][ ] team meeting (from: Monday 2pm to: 4pm)
+Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[T][ ] return book
+3.[D][ ] submit report (by: Sunday)
+4.[E][ ] team meeting (from: Monday 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+Nice! I've marked this task as done:
+  [T][X] read book
+____________________________________________________________
+____________________________________________________________
+Nice! I've marked this task as done:
+  [D][X] submit report (by: Sunday)
+____________________________________________________________
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][X] read book
+2.[T][ ] return book
+3.[D][X] submit report (by: Sunday)
+4.[E][ ] team meeting (from: Monday 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+Alright! I've unmarked this task as incomplete:
+  [T][ ] read book
+____________________________________________________________
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[T][ ] return book
+3.[D][X] submit report (by: Sunday)
+4.[E][ ] team meeting (from: Monday 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+Please enter a valid number
+____________________________________________________________
+____________________________________________________________
+Please enter a valid number
+____________________________________________________________
+____________________________________________________________
+Oops! This task is already marked as incomplete
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
