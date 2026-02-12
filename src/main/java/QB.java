@@ -5,7 +5,7 @@ public class QB {
             "____________________________________________________________";
     private static final int MAX_TASKS = 100;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws QBException {
         printGreeting();
         Scanner in = new Scanner(System.in);
         Task[] items = new Task[MAX_TASKS];
@@ -22,12 +22,16 @@ public class QB {
                 return;
             }
 
-            taskCount = handleCommand(command, inputParts, items, taskCount);
+            try {
+                taskCount = handleCommand(command, inputParts, items, taskCount);
+            } catch (QBException e) {
+                printError(e.getMessage());
+            }
         }
     }
 
-    private static int handleCommand(String command, String[] inputParts, 
-                                     Task[] items, int taskCount) {
+    private static int handleCommand(String command, String[] inputParts,
+                                     Task[] items, int taskCount) throws QBException {
         switch (command) {
         case "list":
             printList(items, taskCount);
@@ -54,10 +58,7 @@ public class QB {
             break;
 
         default:
-            items[taskCount] = new Todo(inputParts[0]);
-            taskCount++;
-            printAdded(items[taskCount - 1], taskCount);
-            break;
+            throw new QBException("Sorry, I don't understand the command " + command);
         }
 
         return taskCount;
@@ -198,7 +199,7 @@ public class QB {
     private static void markTask(Task[] items, int itemNumber) {
         System.out.println(LINE);
 
-        if (!isValidTaskNumber(itemNumber, items)) {
+        if (isValidTaskNumber(itemNumber, items)) {
             System.out.println("Please enter a valid number");
         } else if (!items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].markAsDone();
@@ -214,7 +215,7 @@ public class QB {
     private static void unmarkTask(Task[] items, int itemNumber) {
         System.out.println(LINE);
 
-        if (!isValidTaskNumber(itemNumber, items)) {
+        if (isValidTaskNumber(itemNumber, items)) {
             System.out.println("Please enter a valid number");
         } else if (items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].unmarkAsDone();
@@ -230,6 +231,6 @@ public class QB {
     private static boolean isValidTaskNumber(int itemNumber, Task[] items) {
         boolean isWithinRange = itemNumber >= 1 && itemNumber <= MAX_TASKS;
         boolean taskExists = items[itemNumber - 1] != null;
-        return isWithinRange && taskExists;
+        return !isWithinRange || !taskExists;
     }
 }
