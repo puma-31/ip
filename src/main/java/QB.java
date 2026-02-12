@@ -80,10 +80,9 @@ public class QB {
         unmarkTask(items, Integer.parseInt(inputParts[1]));
     }
 
-    private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description.");
-            return taskCount;
+            throw new QBException("Please provide a description for your Todo task");
         }
 
         items[taskCount] = new Todo(inputParts[1]);
