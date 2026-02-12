@@ -91,16 +91,14 @@ public class QB {
         return taskCount;
     }
 
-    private static int handleDeadlineCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleDeadlineCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description and deadline.");
-            return taskCount;
+            throw new QBException("Please provide a task description and deadline using /by.");
         }
 
         String[] deadlineParts = inputParts[1].split(" /by ", 2);
         if (deadlineParts.length < 2) {
-            printError("Please use format: deadline <description> /by <time>");
-            return taskCount;
+            throw new QBException("Please use format: deadline <description> /by <time>");
         }
 
         items[taskCount] = new Deadline(deadlineParts[0], deadlineParts[1]);
@@ -109,22 +107,19 @@ public class QB {
         return taskCount;
     }
 
-    private static int handleEventCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleEventCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description, start and end time.");
-            return taskCount;
+            throw new QBException("Please provide a task description, start and end time.");
         }
 
         String[] eventParts = inputParts[1].split(" /from ", 2);
         if (eventParts.length < 2) {
-            printError("Please use format: event <description> /from <start> /to <end>");
-            return taskCount;
+            throw new QBException("Please provide an event start time using /from");
         }
 
         String[] timeParts = eventParts[1].split(" /to ", 2);
         if (timeParts.length < 2) {
-            printError("Please use format: event <description> /from <start> /to <end>");
-            return taskCount;
+            throw new QBException("Please provide an event start time using /to");
         }
 
         items[taskCount] = new Event(eventParts[0], timeParts[0], timeParts[1]);
