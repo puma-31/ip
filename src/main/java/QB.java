@@ -64,20 +64,29 @@ public class QB {
         return taskCount;
     }
 
-    private static void handleMarkCommand(String[] inputParts, Task[] items) {
+    private static void handleMarkCommand(String[] inputParts, Task[] items) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please specify a task number.");
-            return;
+            throw new QBException("Please specify a task number.");
         }
-        markTask(items, Integer.parseInt(inputParts[1]));
+
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            markTask(items, taskNumber);
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
     }
 
-    private static void handleUnmarkCommand(String[] inputParts, Task[] items) {
+    private static void handleUnmarkCommand(String[] inputParts, Task[] items) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please specify a task number.");
-            return;
+            throw new QBException("Please specify a task number.");
         }
-        unmarkTask(items, Integer.parseInt(inputParts[1]));
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            unmarkTask(items, taskNumber);
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
     }
 
     private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
@@ -190,41 +199,40 @@ public class QB {
         System.out.println(LINE);
     }
 
-    private static void markTask(Task[] items, int itemNumber) {
-        System.out.println(LINE);
+    private static void markTask(Task[] items, int itemNumber) throws QBException {
 
-        if (isValidTaskNumber(itemNumber, items)) {
-            System.out.println("Please enter a valid number");
+
+        if (isInvalidTaskNumber(itemNumber, items)) {
+            throw new QBException("Please enter a valid number");
         } else if (!items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].markAsDone();
+            System.out.println(LINE);
             System.out.println("Nice! I've marked this task as done:");
             System.out.println("  " + items[itemNumber - 1]);
+            System.out.println(LINE);
         } else {
-            System.out.println("Oops! This task is already marked as done");
+            throw new QBException("Oops! This task is already marked as done");
         }
-
-        System.out.println(LINE);
     }
 
-    private static void unmarkTask(Task[] items, int itemNumber) {
-        System.out.println(LINE);
-
-        if (isValidTaskNumber(itemNumber, items)) {
-            System.out.println("Please enter a valid number");
+    private static void unmarkTask(Task[] items, int itemNumber) throws QBException {
+        if (isInvalidTaskNumber(itemNumber, items)) {
+            throw new QBException("Please enter a valid number");
         } else if (items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].unmarkAsDone();
+            System.out.println(LINE);
             System.out.println("Alright! I've unmarked this task as incomplete:");
             System.out.println("  " + items[itemNumber - 1]);
+            System.out.println(LINE);
         } else {
-            System.out.println("Oops! This task is already marked as incomplete");
+            throw new QBException("Oops! This task is already marked as incomplete");
         }
-
-        System.out.println(LINE);
     }
 
-    private static boolean isValidTaskNumber(int itemNumber, Task[] items) {
-        boolean isWithinRange = itemNumber >= 1 && itemNumber <= MAX_TASKS;
-        boolean taskExists = items[itemNumber - 1] != null;
-        return !isWithinRange || !taskExists;
+    private static boolean isInvalidTaskNumber(int itemNumber, Task[] items) {
+        if (itemNumber < 1 || itemNumber > MAX_TASKS){
+            return true;
+        }
+        return items[itemNumber - 1] == null;
     }
 }
