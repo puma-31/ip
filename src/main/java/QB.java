@@ -5,7 +5,7 @@ public class QB {
             "____________________________________________________________";
     private static final int MAX_TASKS = 100;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws QBException {
         printGreeting();
         Scanner in = new Scanner(System.in);
         Task[] items = new Task[MAX_TASKS];
@@ -22,12 +22,16 @@ public class QB {
                 return;
             }
 
-            taskCount = handleCommand(command, inputParts, items, taskCount);
+            try {
+                taskCount = handleCommand(command, inputParts, items, taskCount);
+            } catch (QBException e) {
+                printError(e.getMessage());
+            }
         }
     }
 
-    private static int handleCommand(String command, String[] inputParts, 
-                                     Task[] items, int taskCount) {
+    private static int handleCommand(String command, String[] inputParts,
+                                     Task[] items, int taskCount) throws QBException {
         switch (command) {
         case "list":
             printList(items, taskCount);
@@ -54,35 +58,40 @@ public class QB {
             break;
 
         default:
-            items[taskCount] = new Todo(inputParts[0]);
-            taskCount++;
-            printAdded(items[taskCount - 1], taskCount);
-            break;
+            throw new QBException("Sorry, I don't understand the command " + command);
         }
 
         return taskCount;
     }
 
-    private static void handleMarkCommand(String[] inputParts, Task[] items) {
+    private static void handleMarkCommand(String[] inputParts, Task[] items) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please specify a task number.");
-            return;
+            throw new QBException("Please specify a task number.");
         }
-        markTask(items, Integer.parseInt(inputParts[1]));
+
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            markTask(items, taskNumber);
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
     }
 
-    private static void handleUnmarkCommand(String[] inputParts, Task[] items) {
+    private static void handleUnmarkCommand(String[] inputParts, Task[] items) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please specify a task number.");
-            return;
+            throw new QBException("Please specify a task number.");
         }
-        unmarkTask(items, Integer.parseInt(inputParts[1]));
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            unmarkTask(items, taskNumber);
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
     }
 
-    private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description.");
-            return taskCount;
+            throw new QBException("Please provide a description for your Todo task");
         }
 
         items[taskCount] = new Todo(inputParts[1]);
@@ -91,16 +100,14 @@ public class QB {
         return taskCount;
     }
 
-    private static int handleDeadlineCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleDeadlineCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description and deadline.");
-            return taskCount;
+            throw new QBException("Please provide a task description and deadline using /by.");
         }
 
         String[] deadlineParts = inputParts[1].split(" /by ", 2);
         if (deadlineParts.length < 2) {
-            printError("Please use format: deadline <description> /by <time>");
-            return taskCount;
+            throw new QBException("Please use format: deadline <description> /by <time>");
         }
 
         items[taskCount] = new Deadline(deadlineParts[0], deadlineParts[1]);
@@ -109,22 +116,19 @@ public class QB {
         return taskCount;
     }
 
-    private static int handleEventCommand(String[] inputParts, Task[] items, int taskCount) {
+    private static int handleEventCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
-            printError("Please provide a task description, start and end time.");
-            return taskCount;
+            throw new QBException("Please provide a task description, start and end time.");
         }
 
         String[] eventParts = inputParts[1].split(" /from ", 2);
         if (eventParts.length < 2) {
-            printError("Please use format: event <description> /from <start> /to <end>");
-            return taskCount;
+            throw new QBException("Please provide an event start time using /from");
         }
 
         String[] timeParts = eventParts[1].split(" /to ", 2);
         if (timeParts.length < 2) {
-            printError("Please use format: event <description> /from <start> /to <end>");
-            return taskCount;
+            throw new QBException("Please provide an event start time using /to");
         }
 
         items[taskCount] = new Event(eventParts[0], timeParts[0], timeParts[1]);
@@ -195,41 +199,40 @@ public class QB {
         System.out.println(LINE);
     }
 
-    private static void markTask(Task[] items, int itemNumber) {
-        System.out.println(LINE);
+    private static void markTask(Task[] items, int itemNumber) throws QBException {
 
-        if (!isValidTaskNumber(itemNumber, items)) {
-            System.out.println("Please enter a valid number");
+
+        if (isInvalidTaskNumber(itemNumber, items)) {
+            throw new QBException("Please enter a valid number");
         } else if (!items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].markAsDone();
+            System.out.println(LINE);
             System.out.println("Nice! I've marked this task as done:");
             System.out.println("  " + items[itemNumber - 1]);
+            System.out.println(LINE);
         } else {
-            System.out.println("Oops! This task is already marked as done");
+            throw new QBException("Oops! This task is already marked as done");
         }
-
-        System.out.println(LINE);
     }
 
-    private static void unmarkTask(Task[] items, int itemNumber) {
-        System.out.println(LINE);
-
-        if (!isValidTaskNumber(itemNumber, items)) {
-            System.out.println("Please enter a valid number");
+    private static void unmarkTask(Task[] items, int itemNumber) throws QBException {
+        if (isInvalidTaskNumber(itemNumber, items)) {
+            throw new QBException("Please enter a valid number");
         } else if (items[itemNumber - 1].getStatusIcon().equals("X")) {
             items[itemNumber - 1].unmarkAsDone();
+            System.out.println(LINE);
             System.out.println("Alright! I've unmarked this task as incomplete:");
             System.out.println("  " + items[itemNumber - 1]);
+            System.out.println(LINE);
         } else {
-            System.out.println("Oops! This task is already marked as incomplete");
+            throw new QBException("Oops! This task is already marked as incomplete");
         }
-
-        System.out.println(LINE);
     }
 
-    private static boolean isValidTaskNumber(int itemNumber, Task[] items) {
-        boolean isWithinRange = itemNumber >= 1 && itemNumber <= MAX_TASKS;
-        boolean taskExists = items[itemNumber - 1] != null;
-        return isWithinRange && taskExists;
+    private static boolean isInvalidTaskNumber(int itemNumber, Task[] items) {
+        if (itemNumber < 1 || itemNumber > MAX_TASKS){
+            return true;
+        }
+        return items[itemNumber - 1] == null;
     }
 }
