@@ -1,5 +1,6 @@
 package QB;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class QB {
@@ -10,7 +11,7 @@ public class QB {
     public static void main(String[] args) throws QBException {
         printGreeting();
         Scanner in = new Scanner(System.in);
-        Task[] items = new Task[MAX_TASKS];
+        ArrayList<Task> items = new ArrayList<Task>();
         int taskCount = 0;
 
         while (true) {
@@ -33,7 +34,7 @@ public class QB {
     }
 
     private static int handleCommand(String command, String[] inputParts,
-                                     Task[] items, int taskCount) throws QBException {
+                                     ArrayList<Task> items, int taskCount) throws QBException {
         switch (command) {
         case "list":
             printList(items, taskCount);
@@ -66,7 +67,7 @@ public class QB {
         return taskCount;
     }
 
-    private static void handleMarkCommand(String[] inputParts, Task[] items) throws QBException {
+    private static void handleMarkCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please specify a task number.");
         }
@@ -79,7 +80,7 @@ public class QB {
         }
     }
 
-    private static void handleUnmarkCommand(String[] inputParts, Task[] items) throws QBException {
+    private static void handleUnmarkCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please specify a task number.");
         }
@@ -91,18 +92,18 @@ public class QB {
         }
     }
 
-    private static int handleTodoCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
+    private static int handleTodoCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a description for your Todo task");
         }
 
-        items[taskCount] = new Todo(inputParts[1]);
+        items.add(taskCount, new Todo(inputParts[1]));
         taskCount++;
-        printAdded(items[taskCount - 1], taskCount);
+        printAdded(items.get(taskCount - 1), taskCount);
         return taskCount;
     }
 
-    private static int handleDeadlineCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
+    private static int handleDeadlineCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description and deadline using /by.");
         }
@@ -112,13 +113,13 @@ public class QB {
             throw new QBException("Please use format: deadline <description> /by <time>");
         }
 
-        items[taskCount] = new Deadline(deadlineParts[0], deadlineParts[1]);
+        items.add(taskCount, new Deadline(deadlineParts[0], deadlineParts[1]));
         taskCount++;
-        printAdded(items[taskCount - 1], taskCount);
+        printAdded(items.get(taskCount - 1), taskCount);
         return taskCount;
     }
 
-    private static int handleEventCommand(String[] inputParts, Task[] items, int taskCount) throws QBException {
+    private static int handleEventCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description, start and end time.");
         }
@@ -133,9 +134,9 @@ public class QB {
             throw new QBException("Please provide an event start time using /to");
         }
 
-        items[taskCount] = new Event(eventParts[0], timeParts[0], timeParts[1]);
+        items.add(taskCount, new Event(eventParts[0], timeParts[0], timeParts[1]));
         taskCount++;
-        printAdded(items[taskCount - 1], taskCount);
+        printAdded(items.get(taskCount - 1), taskCount);
         return taskCount;
     }
 
@@ -192,49 +193,46 @@ public class QB {
         System.out.println(LINE);
     }
 
-    private static void printList(Task[] items, int taskCount) {
+    private static void printList(ArrayList<Task> items, int taskCount) {
         System.out.println(LINE);
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            System.out.println((i + 1) + "." + items[i]);
+            System.out.println((i + 1) + "." + items.get(i));
         }
         System.out.println(LINE);
     }
 
-    private static void markTask(Task[] items, int itemNumber) throws QBException {
+    private static void markTask(ArrayList<Task> items, int itemNumber) throws QBException {
 
 
         if (isInvalidTaskNumber(itemNumber, items)) {
             throw new QBException("Please enter a valid number");
-        } else if (!items[itemNumber - 1].getStatusIcon().equals("X")) {
-            items[itemNumber - 1].markAsDone();
+        } else if (!items.get(itemNumber - 1).getStatusIcon().equals("X")) {
+            items.get(itemNumber - 1).markAsDone();
             System.out.println(LINE);
             System.out.println("Nice! I've marked this task as done:");
-            System.out.println("  " + items[itemNumber - 1]);
+            System.out.println("  " + items.get(itemNumber - 1));
             System.out.println(LINE);
         } else {
             throw new QBException("Oops! This task is already marked as done");
         }
     }
 
-    private static void unmarkTask(Task[] items, int itemNumber) throws QBException {
+    private static void unmarkTask(ArrayList<Task> items, int itemNumber) throws QBException {
         if (isInvalidTaskNumber(itemNumber, items)) {
             throw new QBException("Please enter a valid number");
-        } else if (items[itemNumber - 1].getStatusIcon().equals("X")) {
-            items[itemNumber - 1].unmarkAsDone();
+        } else if (items.get(itemNumber - 1).getStatusIcon().equals("X")) {
+            items.get(itemNumber - 1).unmarkAsDone();
             System.out.println(LINE);
             System.out.println("Alright! I've unmarked this task as incomplete:");
-            System.out.println("  " + items[itemNumber - 1]);
+            System.out.println("  " + items.get(itemNumber - 1));
             System.out.println(LINE);
         } else {
             throw new QBException("Oops! This task is already marked as incomplete");
         }
     }
 
-    private static boolean isInvalidTaskNumber(int itemNumber, Task[] items) {
-        if (itemNumber < 1 || itemNumber > MAX_TASKS){
-            return true;
-        }
-        return items[itemNumber - 1] == null;
+    private static boolean isInvalidTaskNumber(int itemNumber, ArrayList<Task> items) {
+        return itemNumber < 1 || itemNumber > items.size();
     }
 }
