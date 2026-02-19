@@ -6,13 +6,11 @@ import java.util.Scanner;
 public class QB {
     private static final String LINE =
             "____________________________________________________________";
-    private static final int MAX_TASKS = 100;
 
     public static void main(String[] args) throws QBException {
         printGreeting();
         Scanner in = new Scanner(System.in);
         ArrayList<Task> items = new ArrayList<Task>();
-        int taskCount = 0;
 
         while (true) {
             String inputLine = in.nextLine();
@@ -26,18 +24,18 @@ public class QB {
             }
 
             try {
-                taskCount = handleCommand(command, inputParts, items, taskCount);
+                handleCommand(command, inputParts, items);
             } catch (QBException e) {
                 printError(e.getMessage());
             }
         }
     }
 
-    private static int handleCommand(String command, String[] inputParts,
-                                     ArrayList<Task> items, int taskCount) throws QBException {
+    private static void handleCommand(String command, String[] inputParts,
+                                     ArrayList<Task> items) throws QBException {
         switch (command) {
         case "list":
-            printList(items, taskCount);
+            printList(items);
             break;
 
         case "mark":
@@ -49,22 +47,21 @@ public class QB {
             break;
 
         case "todo":
-            taskCount = handleTodoCommand(inputParts, items, taskCount);
+            handleTodoCommand(inputParts, items);
             break;
 
         case "deadline":
-            taskCount = handleDeadlineCommand(inputParts, items, taskCount);
+            handleDeadlineCommand(inputParts, items);
             break;
 
         case "event":
-            taskCount = handleEventCommand(inputParts, items, taskCount);
+            handleEventCommand(inputParts, items);
             break;
 
         default:
             throw new QBException("Sorry, I don't understand the command " + command);
         }
 
-        return taskCount;
     }
 
     private static void handleMarkCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
@@ -92,18 +89,16 @@ public class QB {
         }
     }
 
-    private static int handleTodoCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
+    private static void handleTodoCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a description for your Todo task");
         }
 
-        items.add(taskCount, new Todo(inputParts[1]));
-        taskCount++;
-        printAdded(items.get(taskCount - 1), taskCount);
-        return taskCount;
+        items.add(new Todo(inputParts[1]));
+        printAdded(items.get(items.size() - 1), items);
     }
 
-    private static int handleDeadlineCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
+    private static void handleDeadlineCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description and deadline using /by.");
         }
@@ -113,13 +108,11 @@ public class QB {
             throw new QBException("Please use format: deadline <description> /by <time>");
         }
 
-        items.add(taskCount, new Deadline(deadlineParts[0], deadlineParts[1]));
-        taskCount++;
-        printAdded(items.get(taskCount - 1), taskCount);
-        return taskCount;
+        items.add(new Deadline(deadlineParts[0], deadlineParts[1]));
+        printAdded(items.get(items.size() - 1), items);
     }
 
-    private static int handleEventCommand(String[] inputParts, ArrayList<Task> items, int taskCount) throws QBException {
+    private static void handleEventCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description, start and end time.");
         }
@@ -134,10 +127,8 @@ public class QB {
             throw new QBException("Please provide an event start time using /to");
         }
 
-        items.add(taskCount, new Event(eventParts[0], timeParts[0], timeParts[1]));
-        taskCount++;
-        printAdded(items.get(taskCount - 1), taskCount);
-        return taskCount;
+        items.add(new Event(eventParts[0], timeParts[0], timeParts[1]));
+        printAdded(items.get(items.size() - 1), items);
     }
 
     private static boolean hasNoArguments(String[] inputParts) {
@@ -185,18 +176,18 @@ public class QB {
         System.out.println(LINE);
     }
 
-    private static void printAdded(Task task, int taskCount) {
+    private static void printAdded(Task task, ArrayList<Task> items) {
         System.out.println(LINE);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+        System.out.println("Now you have " + items.size() + " tasks in the list.");
         System.out.println(LINE);
     }
 
-    private static void printList(ArrayList<Task> items, int taskCount) {
+    private static void printList(ArrayList<Task> items) {
         System.out.println(LINE);
         System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
+        for (int i = 0; i < items.size(); i++) {
             System.out.println((i + 1) + "." + items.get(i));
         }
         System.out.println(LINE);
