@@ -1,3 +1,5 @@
+package QB;
+
 public class Deadline extends Task {
     private String by;
 
