@@ -1,3 +1,5 @@
+package QB;
+
 import java.util.Scanner;
 
 public class QB {
