@@ -46,6 +46,10 @@ public class QB {
             handleUnmarkCommand(inputParts, items);
             break;
 
+        case "delete":
+            handleDeleteCommand(inputParts, items);
+            break;
+
         case "todo":
             handleTodoCommand(inputParts, items);
             break;
@@ -84,6 +88,19 @@ public class QB {
         try {
             int taskNumber = Integer.parseInt(inputParts[1]);
             unmarkTask(items, taskNumber);
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
+    }
+
+    private static void handleDeleteCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+        if (hasNoArguments(inputParts)) {
+            throw new QBException("Please specify a task number");
+        }
+
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            deleteTask(items, taskNumber);
         } catch (NumberFormatException e) {
             throw new QBException("Task number must be a valid integer.");
         }
@@ -220,6 +237,19 @@ public class QB {
             System.out.println(LINE);
         } else {
             throw new QBException("Oops! This task is already marked as incomplete");
+        }
+    }
+
+    private static void deleteTask(ArrayList<Task> items, int itemNumber) throws QBException {
+        if (isInvalidTaskNumber(itemNumber, items)) {
+            throw new QBException("Please enter a valid number");
+        } else {
+            System.out.println(LINE);
+            System.out.println("Deleted this task:");
+            System.out.println("  " + items.get(itemNumber - 1));
+            System.out.println("Now you have " + (items.size() - 1) + " tasks in your list:");
+            System.out.println(LINE);
+            items.remove(itemNumber - 1);
         }
     }
 
