@@ -1,0 +1,6 @@
+T | 1 | hi
+T | 0 | hi
+D | 0 | asjhd | kajshd
+E | 0 | ajshd | aojoshd | olasdd
+T | 0 | hihi
+D | 0 | askjhd | aishd
