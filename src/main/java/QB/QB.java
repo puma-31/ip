@@ -1,17 +1,25 @@
 package QB;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileWriter;
 
 public class QB {
     private static final String LINE =
             "____________________________________________________________";
     private static final int MAX_TASKS = 100;
+    private static final String FILE_PATH = "data" + File.separator + "QBList.txt";
 
     public static void main(String[] args) throws QBException {
         printGreeting();
         Scanner in = new Scanner(System.in);
         Task[] items = new Task[MAX_TASKS];
-        int taskCount = 0;
+        int taskCount = loadTasks(items);
+        System.out.print("You currently have " + taskCount + " tasks in your program\n");
+        System.out.print(LINE + "\n");
 
         while (true) {
             String inputLine = in.nextLine();
@@ -41,22 +49,27 @@ public class QB {
 
         case "mark":
             handleMarkCommand(inputParts, items);
+            saveTasks(items, taskCount);
             break;
 
         case "unmark":
             handleUnmarkCommand(inputParts, items);
+            saveTasks(items, taskCount);
             break;
 
         case "todo":
             taskCount = handleTodoCommand(inputParts, items, taskCount);
+            saveTasks(items, taskCount);
             break;
 
         case "deadline":
             taskCount = handleDeadlineCommand(inputParts, items, taskCount);
+            saveTasks(items, taskCount);
             break;
 
         case "event":
             taskCount = handleEventCommand(inputParts, items, taskCount);
+            saveTasks(items, taskCount);
             break;
 
         default:
@@ -229,6 +242,86 @@ public class QB {
         } else {
             throw new QBException("Oops! This task is already marked as incomplete");
         }
+    }
+
+    private static void saveTasks(Task[] items, int taskCount) {
+        try {
+            File file = new File(FILE_PATH);
+            file.getParentFile().mkdirs();
+            FileWriter fw = new FileWriter(FILE_PATH);
+            for (int i = 0; i < taskCount; i++) {
+                fw.write(taskToFileFormat(items[i]) + System.lineSeparator());
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error saving tasks: " + e.getMessage());
+        }
+    }
+
+    private static String taskToFileFormat(Task task) {
+        int done = task.getStatusIcon().equals("X") ? 1 : 0;
+        String result = "";
+        if (task instanceof Todo) {
+            Todo t = (Todo) task;
+            result =  "T | " + done + " | " + t.description;
+        } else if (task instanceof Deadline) {
+            Deadline d = (Deadline) task;
+            result =  "D | " + done + " | " + d.description + " | " + d.getBy();
+        } else if (task instanceof Event) {
+            Event e = (Event) task;
+            result =  "E | " + done + " | " + e.description + " | " + e.getFrom() + " | " + e.getTo();
+        }
+        return result;
+    }
+
+    private static int loadTasks(Task[] items) {
+        int taskCount = 0;
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            System.out.println("No saved tasks found. Starting fresh.");
+            return 0;
+        }
+
+        try {
+            Scanner fileScanner = new Scanner(file);
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine().trim();
+                if (line.isEmpty()) continue;
+
+                try {
+                    String[] parts = line.split(" \\| ");
+                    String type = parts[0];
+                    boolean isDone = parts[1].equals("1");
+
+                    switch (type) {
+                    case "T":
+                        items[taskCount] = new Todo(parts[2]);
+                        break;
+                    case "D":
+                        items[taskCount] = new Deadline(parts[2], parts[3]);
+                        break;
+                    case "E":
+                        items[taskCount] = new Event(parts[2], parts[3], parts[4]);
+                        break;
+                    default:
+                        System.out.println("Skipping corrupted line: " + line);
+                        continue;
+                    }
+
+                    if (isDone) items[taskCount].markAsDone();
+                    taskCount++;
+
+                } catch (Exception e) {
+                    System.out.println("Skipping corrupted line: " + line);
+                }
+            }
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        return taskCount;
     }
 
     private static boolean isInvalidTaskNumber(int itemNumber, Task[] items) {
