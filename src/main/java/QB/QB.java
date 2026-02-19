@@ -58,6 +58,7 @@ public class QB {
 
         case "delete":
             handleDeleteCommand(inputParts, items);
+            saveTasks(items);
             break;
 
         case "todo":
