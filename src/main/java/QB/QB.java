@@ -11,7 +11,7 @@ import java.io.FileWriter;
 public class QB {
     private static final String LINE =
             "____________________________________________________________";
-    private static final String FILE_PATH = "data" + File.separator + "QBList.txt";
+    private static final String FILE_PATH = "./data/QBList.txt";
 
     public static void main(String[] args) throws QBException {
         printGreeting();
