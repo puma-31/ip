@@ -9,32 +9,33 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class QB {
-    private static final String LINE =
-            "____________________________________________________________";
+
+    private static Ui ui;
+
     private static final String FILE_PATH = "./data/QBList.txt";
 
     public static void main(String[] args) throws QBException {
-        printGreeting();
-        Scanner in = new Scanner(System.in);
+
+        ui = new Ui();
+        ui.printGreeting();
         ArrayList<Task> items = new ArrayList<Task>();
-        System.out.print("You currently have " + loadTasks(items) + " tasks in your program\n");
-        System.out.print(LINE + "\n");
+        ui.printTaskNumber(loadTasks(items));
 
         while (true) {
-            String inputLine = in.nextLine();
+            String inputLine = ui.readCommand();
             String[] inputParts = inputLine.split(" ", 2);
             String command = inputParts[0];
 
             if (command.equals("bye")) {
-                printBye();
-                in.close();
+                ui.printBye();
+                ui.close();
                 return;
             }
 
             try {
                 handleCommand(command, inputParts, items);
             } catch (QBException e) {
-                printError(e.getMessage());
+                ui.printError(e.getMessage());
             }
         }
     }
@@ -43,7 +44,7 @@ public class QB {
                                      ArrayList<Task> items) throws QBException {
         switch (command) {
         case "list":
-            printList(items);
+            ui.printList(items);
             break;
 
         case "mark":
@@ -125,7 +126,7 @@ public class QB {
         }
 
         items.add(new Todo(inputParts[1]));
-        printAdded(items.get(items.size() - 1), items);
+        ui.printAdded(items.get(items.size() - 1), items.size());
     }
 
     private static void handleDeadlineCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
@@ -139,7 +140,7 @@ public class QB {
         }
 
         items.add(new Deadline(deadlineParts[0], deadlineParts[1]));
-        printAdded(items.get(items.size() - 1), items);
+        ui.printAdded(items.get(items.size() - 1), items.size());
     }
 
     private static void handleEventCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
@@ -158,82 +159,19 @@ public class QB {
         }
 
         items.add(new Event(eventParts[0], timeParts[0], timeParts[1]));
-        printAdded(items.get(items.size() - 1), items);
+        ui.printAdded(items.get(items.size() - 1), items.size());
     }
 
     private static boolean hasNoArguments(String[] inputParts) {
         return inputParts.length < 2;
     }
 
-    private static void printError(String message) {
-        System.out.println(LINE);
-        System.out.println(message);
-        System.out.println(LINE);
-    }
-
-    public static void printGreeting() {
-        String logo = """
-                  /$$$$$$   /$$$$$$$
-                 /$$__  $$ | $$__  $$
-                | $$  \\ $$ | $$  \\ $$
-                | $$  | $$ | $$$$$$$
-                | $$  | $$ | $$__  $$
-                | $$/$$ $$ | $$  \\ $$
-                |  $$$$$$/ | $$$$$$$/
-                 \\____ $$$ |_______/
-                      \\__/       \s""";
-        System.out.println(logo);
-
-        String greeting = """
-                Hello! I'm QB, your personal TaskTracker
-                What can I do for you?
-                - Add a todo: todo <description>
-                - Add a deadline: deadline <description> /by <time>
-                - Add an event: event <description> /from <start> /to <end>
-                - View all tasks: list
-                - Mark task as done: mark <task number>
-                - Unmark task: unmark <task number>
-                - Exit: bye""";
-
-        System.out.println(LINE);
-        System.out.println(greeting);
-        System.out.println(LINE);
-    }
-
-    public static void printBye() {
-        System.out.println(LINE);
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println(LINE);
-    }
-
-    private static void printAdded(Task task, ArrayList<Task> items) {
-        System.out.println(LINE);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + items.size() + " tasks in the list.");
-        System.out.println(LINE);
-    }
-
-    private static void printList(ArrayList<Task> items) {
-        System.out.println(LINE);
-        System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < items.size(); i++) {
-            System.out.println((i + 1) + "." + items.get(i));
-        }
-        System.out.println(LINE);
-    }
-
     private static void markTask(ArrayList<Task> items, int itemNumber) throws QBException {
-
-
         if (isInvalidTaskNumber(itemNumber, items)) {
             throw new QBException("Please enter a valid number");
         } else if (!items.get(itemNumber - 1).getStatusIcon().equals("X")) {
             items.get(itemNumber - 1).markAsDone();
-            System.out.println(LINE);
-            System.out.println("Nice! I've marked this task as done:");
-            System.out.println("  " + items.get(itemNumber - 1));
-            System.out.println(LINE);
+            ui.printMarked(items.get(itemNumber - 1));
         } else {
             throw new QBException("Oops! This task is already marked as done");
         }
@@ -244,10 +182,7 @@ public class QB {
             throw new QBException("Please enter a valid number");
         } else if (items.get(itemNumber - 1).getStatusIcon().equals("X")) {
             items.get(itemNumber - 1).unmarkAsDone();
-            System.out.println(LINE);
-            System.out.println("Alright! I've unmarked this task as incomplete:");
-            System.out.println("  " + items.get(itemNumber - 1));
-            System.out.println(LINE);
+            ui.printUnmarked(items.get(itemNumber - 1));
         } else {
             throw new QBException("Oops! This task is already marked as incomplete");
         }
@@ -257,11 +192,7 @@ public class QB {
         if (isInvalidTaskNumber(itemNumber, items)) {
             throw new QBException("Please enter a valid number");
         } else {
-            System.out.println(LINE);
-            System.out.println("Deleted this task:");
-            System.out.println("  " + items.get(itemNumber - 1));
-            System.out.println("Now you have " + (items.size() - 1) + " tasks in your list:");
-            System.out.println(LINE);
+            ui.printDeleted(items.get(itemNumber-1), items.size()-1);
             items.remove(itemNumber - 1);
         }
     }
@@ -299,7 +230,7 @@ public class QB {
         File file = new File(FILE_PATH);
 
         if (!file.exists()) {
-            System.out.println("No saved tasks found. Starting fresh.");
+            ui.printLoadingError();
             return 0;
         }
 
@@ -342,7 +273,6 @@ public class QB {
 
         return items.size();
     }
-
 
     private static boolean isInvalidTaskNumber(int itemNumber, ArrayList<Task> items) {
         return itemNumber < 1 || itemNumber > items.size();
