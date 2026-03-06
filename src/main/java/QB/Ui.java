@@ -171,7 +171,7 @@ public class Ui {
      */
     public void printFound(ArrayList<Task> matches, String keyword) {
         System.out.println(LINE);
-        System.out.println("This are the tasks I found for " + keyword + ":");
+        System.out.println("These are the tasks I found for " + keyword + ":");
         for (int i = 0; i < matches.size(); i++) {
             System.out.println((i + 1) + "." + matches.get(i));
         }
