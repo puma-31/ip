@@ -8,13 +8,28 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileWriter;
 
+/**
+ * Handles loading and saving tasks to a file,
+ * allowing task data to persist between sessions.
+ */
 public class Storage {
     private static String filePath;
 
+    /**
+     * Constructs a Storage instance with the specified file path.
+     *
+     * @param filePath Path to the file used for reading and writing tasks.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads tasks from the save file.
+     *
+     * @return An ArrayList of tasks read from the file.
+     *         Returns an empty list if the file does not exist or cannot be read.
+     */
     public int loadTasks(ArrayList<Task> items) {
         File file = new File(filePath);
 
@@ -63,6 +78,11 @@ public class Storage {
         return items.size();
     }
 
+    /**
+     * converts task to file saving format.
+     *
+     * @param task The list of tasks to convert.
+     */
     private String taskToFileFormat(Task task) {
         int done = task.getStatusIcon().equals("X") ? 1 : 0;
         String result = "";
@@ -79,6 +99,11 @@ public class Storage {
         return result;
     }
 
+    /**
+     * Saves the current list of tasks to the save file.
+     *
+     * @param items The list of tasks to save.
+     */
     public void saveTasks(ArrayList<Task> items) {
         try {
             File file = new File(filePath);
