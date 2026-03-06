@@ -56,6 +56,16 @@ public class TaskList {
         }
     }
 
+    public ArrayList<Task> find(String keyword) {
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.description.contains(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
     private static boolean isInvalidTaskNumber(int itemNumber, ArrayList<Task> items) {
         return itemNumber < 1 || itemNumber > items.size();
     }
