@@ -113,6 +113,15 @@ public class Ui {
         System.out.println("  " + task);
         System.out.println(LINE);
     }
+
+    public void printFound(ArrayList<Task> matches, String keyword) {
+        System.out.println(LINE);
+        System.out.println("This are the tasks I found for " + keyword + ":");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println((i + 1) + "." + matches.get(i));
+        }
+        System.out.println(LINE);
+    }
 }
 
 
