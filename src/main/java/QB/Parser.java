@@ -2,7 +2,21 @@ package QB;
 
 import java.util.ArrayList;
 
+/**
+ * Parses user input and executes the corresponding command,
+ * coordinating between TaskList, Ui, and Storage.
+ */
 public class Parser {
+
+    /**
+     * Parses a full input line and executes the appropriate command.
+     *
+     * @param inputLine The raw input string from the user.
+     * @param tasks     The current task list.
+     * @param ui        The Ui instance for displaying output.
+     * @param storage   The Storage instance for saving changes.
+     * @throws QBException If the command is unknown or input is malformed.
+     */
     public static void parse(String inputLine, TaskList tasks, Ui ui, Storage storage) throws QBException {
         String[] inputParts = inputLine.split(" ", 2);
         String command = inputParts[0];
