@@ -46,6 +46,7 @@ public class Ui {
                 - View all tasks: list
                 - Mark task as done: mark <task number>
                 - Unmark task: unmark <task number>
+                - Delete task: delete <task number>
                 - Exit: bye""";
 
         System.out.println(LINE);
