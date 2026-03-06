@@ -1,5 +1,9 @@
 package QB;
 
+/**
+ * Main class for the QB task manager application.
+ * Initializes and connects the Ui, Storage, and TaskList components.
+ */
 public class QB {
 
     private Ui ui;
@@ -8,6 +12,11 @@ public class QB {
 
     private static final String FILE_PATH = "./data/QBList.txt";
 
+    /**
+     * Constructs a QB instance, initializing all components and loading saved tasks.
+     *
+     * @param filePath Path to the file used for saving and loading tasks.
+     */
     public QB(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -15,6 +24,10 @@ public class QB {
         storage.loadTasks(tasks.getTasks());
     }
 
+    /**
+     * Starts the main loop of the application, reading and processing user commands
+     * until the user enters "bye".
+     */
     public void run(){
         ui.printGreeting();
         ui.printTaskNumber(tasks.size());

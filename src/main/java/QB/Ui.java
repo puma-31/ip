@@ -3,6 +3,10 @@ package QB;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles all user interaction for the QB application,
+ * including reading input and displaying output to the console.
+ */
 public class Ui {
     private static final String LINE =
             "____________________________________________________________";
@@ -12,10 +16,18 @@ public class Ui {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Reads a command entered by the user.
+     *
+     * @return The full input line as a String.
+     */
     public String readCommand() {
         return scanner.nextLine();
     }
 
+    /**
+     * Closes the Scanner used to read user input.
+     */
     public void close() {
         scanner.close();
     }
@@ -24,6 +36,9 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    /**
+     * Displays the greeting message and list of available commands.
+     */
     public void printGreeting() {
         String logo = """
                   /$$$$$$   /$$$$$$$
@@ -54,12 +69,20 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    /**
+     * Displays the goodbye message.
+     */
     public void printBye() {
         System.out.println(LINE);
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(LINE);
     }
 
+    /**
+     * Displays an error message to the user.
+     *
+     * @param message The error message to display.
+     */
     public void printError(String message) {
         System.out.println(LINE);
         System.out.println(message);
@@ -70,6 +93,12 @@ public class Ui {
         printError("No saved tasks found. Starting fresh.");
     }
 
+    /**
+     * Displays a confirmation message after a task is added.
+     *
+     * @param task The task that was added.
+     * @param size The updated total number of tasks in the list.
+     */
     public void printAdded(Task task, int size) {
         System.out.println(LINE);
         System.out.println("Got it. I've added this task:");
@@ -78,6 +107,12 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    /**
+     * Displays a confirmation message and size after a task is deleted.
+     *
+     * @param task The task that was added.
+     * @param size The updated total number of tasks in the list.
+     */
     public void printDeleted(Task task, int size) {
             System.out.println(LINE);
             System.out.println("Deleted this task:");
@@ -86,6 +121,11 @@ public class Ui {
             System.out.println(LINE);
     }
 
+    /**
+     * Displays all tasks currently in the list.
+     *
+     * @param items The list of tasks to display.
+     */
     public void printList(ArrayList<Task> items) {
         System.out.println(LINE);
         System.out.println("Here are the tasks in your list:");
@@ -100,6 +140,11 @@ public class Ui {
         System.out.print(LINE + "\n");
     }
 
+    /**
+     * Displays a confirmation message after a task is marked as done.
+     *
+     * @param task The task that was marked.
+     */
     public void printMarked(Task task) {
         System.out.println(LINE);
         System.out.println("Nice! I've marked this task as done:");
@@ -107,6 +152,11 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    /**
+     * Displays a confirmation message after a task is unmarked.
+     *
+     * @param task The task that was unmarked.
+     */
     public void printUnmarked(Task task) {
         System.out.println(LINE);
         System.out.println("Alright! I've unmarked this task as incomplete:");
@@ -114,9 +164,14 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    /**
+     * Displays tasks that match a search keyword.
+     *
+     * @param matches The list of matching tasks to display.
+     */
     public void printFound(ArrayList<Task> matches, String keyword) {
         System.out.println(LINE);
-        System.out.println("This are the tasks I found for " + keyword + ":");
+        System.out.println("These are the tasks I found for " + keyword + ":");
         for (int i = 0; i < matches.size(); i++) {
             System.out.println((i + 1) + "." + matches.get(i));
         }
