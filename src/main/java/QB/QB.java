@@ -1,17 +1,12 @@
 package QB;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-import java.io.FileNotFoundException;
-import java.io.File;
-import java.io.FileWriter;
 
 public class QB {
 
     private static Ui ui;
     private static Storage storage;
+    private static TaskList tasks;
 
     private static final String FILE_PATH = "./data/QBList.txt";
 
@@ -21,8 +16,8 @@ public class QB {
         ui.printGreeting();
 
         storage = new Storage("./data/QBList.txt");
-        ArrayList<Task> items = new ArrayList<Task>();
-        ui.printTaskNumber(storage.loadTasks(items));
+        tasks = new TaskList();
+        ui.printTaskNumber(storage.loadTasks(tasks.getTasks()));
 
         while (true) {
             String inputLine = ui.readCommand();
@@ -36,7 +31,7 @@ public class QB {
             }
 
             try {
-                handleCommand(command, inputParts, items);
+                handleCommand(command, inputParts, tasks);
             } catch (QBException e) {
                 ui.printError(e.getMessage());
             }
@@ -44,40 +39,40 @@ public class QB {
     }
 
     private static void handleCommand(String command, String[] inputParts,
-                                     ArrayList<Task> items) throws QBException {
+                                     TaskList tasks) throws QBException {
         switch (command) {
         case "list":
-            ui.printList(items);
+            ui.printList(tasks.getTasks());
             break;
 
         case "mark":
-            handleMarkCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleMarkCommand(inputParts, tasks);
+            storage.saveTasks(tasks.getTasks());
             break;
 
         case "unmark":
-            handleUnmarkCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleUnmarkCommand(inputParts, tasks);
+            storage.saveTasks(tasks.getTasks());
             break;
 
         case "delete":
-            handleDeleteCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleDeleteCommand(inputParts, tasks);
+            storage.saveTasks(tasks.getTasks());
             break;
 
         case "todo":
-            handleTodoCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleTodoCommand(inputParts, tasks.getTasks());
+            storage.saveTasks(tasks.getTasks());
             break;
 
         case "deadline":
-            handleDeadlineCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleDeadlineCommand(inputParts, tasks.getTasks());
+            storage.saveTasks(tasks.getTasks());
             break;
 
         case "event":
-            handleEventCommand(inputParts, items);
-            storage.saveTasks(items);
+            handleEventCommand(inputParts, tasks.getTasks());
+            storage.saveTasks(tasks.getTasks());
             break;
 
         default:
@@ -85,54 +80,56 @@ public class QB {
         }
     }
 
-    private static void handleMarkCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
-        if (hasNoArguments(inputParts)) {
-            throw new QBException("Please specify a task number.");
-        }
-
-        try {
-            int taskNumber = Integer.parseInt(inputParts[1]);
-            markTask(items, taskNumber);
-        } catch (NumberFormatException e) {
-            throw new QBException("Task number must be a valid integer.");
-        }
-    }
-
-    private static void handleUnmarkCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+    private static void handleMarkCommand(String[] inputParts, TaskList tasks) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please specify a task number.");
         }
         try {
             int taskNumber = Integer.parseInt(inputParts[1]);
-            unmarkTask(items, taskNumber);
+            tasks.markTask(taskNumber);
+            ui.printMarked(tasks.get(taskNumber - 1));
         } catch (NumberFormatException e) {
             throw new QBException("Task number must be a valid integer.");
         }
     }
 
-    private static void handleDeleteCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+    private static void handleUnmarkCommand(String[] inputParts, TaskList tasks) throws QBException {
+        if (hasNoArguments(inputParts)) {
+            throw new QBException("Please specify a task number.");
+        }
+        try {
+            int taskNumber = Integer.parseInt(inputParts[1]);
+            tasks.unmarkTask(taskNumber);
+            ui.printUnmarked(tasks.get(taskNumber - 1));
+        } catch (NumberFormatException e) {
+            throw new QBException("Task number must be a valid integer.");
+        }
+    }
+
+    private static void handleDeleteCommand(String[] inputParts, TaskList tasks) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please specify a task number");
         }
 
         try {
             int taskNumber = Integer.parseInt(inputParts[1]);
-            deleteTask(items, taskNumber);
+            Task deletedTask = tasks.deleteTask(taskNumber);
+            ui.printDeleted(deletedTask, tasks.size());
         } catch (NumberFormatException e) {
             throw new QBException("Task number must be a valid integer.");
         }
     }
 
-    private static void handleTodoCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+    private static void handleTodoCommand(String[] inputParts, ArrayList<Task> tasks) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a description for your Todo task");
         }
 
-        items.add(new Todo(inputParts[1]));
-        ui.printAdded(items.get(items.size() - 1), items.size());
+        tasks.add(new Todo(inputParts[1]));
+        ui.printAdded(tasks.get(tasks.size() - 1), tasks.size());
     }
 
-    private static void handleDeadlineCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+    private static void handleDeadlineCommand(String[] inputParts, ArrayList<Task> tasks) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description and deadline using /by.");
         }
@@ -142,11 +139,11 @@ public class QB {
             throw new QBException("Please use format: deadline <description> /by <time>");
         }
 
-        items.add(new Deadline(deadlineParts[0], deadlineParts[1]));
-        ui.printAdded(items.get(items.size() - 1), items.size());
+        tasks.add(new Deadline(deadlineParts[0], deadlineParts[1]));
+        ui.printAdded(tasks.get(tasks.size() - 1), tasks.size());
     }
 
-    private static void handleEventCommand(String[] inputParts, ArrayList<Task> items) throws QBException {
+    private static void handleEventCommand(String[] inputParts, ArrayList<Task> tasks) throws QBException {
         if (hasNoArguments(inputParts)) {
             throw new QBException("Please provide a task description, start and end time.");
         }
@@ -161,46 +158,11 @@ public class QB {
             throw new QBException("Please provide an event start time using /to");
         }
 
-        items.add(new Event(eventParts[0], timeParts[0], timeParts[1]));
-        ui.printAdded(items.get(items.size() - 1), items.size());
+        tasks.add(new Event(eventParts[0], timeParts[0], timeParts[1]));
+        ui.printAdded(tasks.get(tasks.size() - 1), tasks.size());
     }
 
     private static boolean hasNoArguments(String[] inputParts) {
         return inputParts.length < 2;
-    }
-
-    private static void markTask(ArrayList<Task> items, int itemNumber) throws QBException {
-        if (isInvalidTaskNumber(itemNumber, items)) {
-            throw new QBException("Please enter a valid number");
-        } else if (!items.get(itemNumber - 1).getStatusIcon().equals("X")) {
-            items.get(itemNumber - 1).markAsDone();
-            ui.printMarked(items.get(itemNumber - 1));
-        } else {
-            throw new QBException("Oops! This task is already marked as done");
-        }
-    }
-
-    private static void unmarkTask(ArrayList<Task> items, int itemNumber) throws QBException {
-        if (isInvalidTaskNumber(itemNumber, items)) {
-            throw new QBException("Please enter a valid number");
-        } else if (items.get(itemNumber - 1).getStatusIcon().equals("X")) {
-            items.get(itemNumber - 1).unmarkAsDone();
-            ui.printUnmarked(items.get(itemNumber - 1));
-        } else {
-            throw new QBException("Oops! This task is already marked as incomplete");
-        }
-    }
-
-    private static void deleteTask(ArrayList<Task> items, int itemNumber) throws QBException {
-        if (isInvalidTaskNumber(itemNumber, items)) {
-            throw new QBException("Please enter a valid number");
-        } else {
-            ui.printDeleted(items.get(itemNumber-1), items.size()-1);
-            items.remove(itemNumber - 1);
-        }
-    }
-
-    private static boolean isInvalidTaskNumber(int itemNumber, ArrayList<Task> items) {
-        return itemNumber < 1 || itemNumber > items.size();
     }
 }
