@@ -27,6 +27,13 @@ public class Parser {
             storage.saveTasks(tasks.getTasks());
             break;
 
+        case "find":
+            if (hasNoArguments(inputParts)) {
+                throw new QBException("Please provide a keyword to search for.");
+            }
+            ui.printFound(tasks.find(inputParts[1]), command);
+            break;
+
         case "todo":
             handleTodoCommand(inputParts, tasks.getTasks(), ui);
             storage.saveTasks(tasks.getTasks());
