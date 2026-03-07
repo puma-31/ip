@@ -86,7 +86,7 @@ public class TaskList {
     public void unmarkTask(int itemNumber) throws QBException {
         if (isInvalidTaskNumber(itemNumber, tasks)) {
             throw new QBException("Please enter a valid number");
-        } else if (!tasks.get(itemNumber - 1).getStatusIcon().equals("X")) {
+        } else if (tasks.get(itemNumber - 1).getStatusIcon().equals("X")) {
             tasks.get(itemNumber - 1).unmarkAsDone();
         } else {
             throw new QBException("Oops! This task is already marked as incomplete");
